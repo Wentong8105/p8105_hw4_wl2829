@@ -1,0 +1,95 @@
+---
+title: "p8105_hw4_wl2829"
+author: "Wentong"
+date: "11/14/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(readxl)
+```
+
+
+## Problem1
+&nbsp;
+&nbsp;
+
+&nbsp;
+&nbsp;
+
+
+
+## Problem 2
+### a) Generate descriptive statistics for each group and comment on the differences observed.
+```{r, results='hide'}
+cbp_ptsd = 
+  read_csv("./data/Crash.csv")
+```
+
+The mean PTSD score of each type of crash
+```{r}
+lapply(cbp_ptsd, mean, na.rm = T)
+```
+
+The mode PTSD score of each type of crash
+
+```{r}
+modefunc = function(x){
+    tabresult = tabulate(x)
+    themode = which(tabresult == max(tabresult))
+    if(sum(tabresult == max(tabresult))>1) themode = NA
+    return(themode)
+}
+
+apply(cbp_ptsd, 2, modefunc)
+```
+
+The median PTSD score of each type of crash
+```{r}
+cbp_ptsd %>% 
+  boxplot()
+```
+
+```{r}
+summary(cbp_ptsd)
+```
+
+### b) Using a type I error of 0.01, obtain the ANOVA table. State the hypotheses, test statistic, critical value, and decision interpreted in the context of the problem.
+```{r}
+cbp_anova = 
+  cbp_ptsd %>% 
+  pivot_longer(
+    pedestrian:car,
+    names_to = "group",
+    values_to = "score"
+  ) %>% 
+  na.omit() %>% 
+  mutate(group = factor(group))
+
+res_aov = aov(score ~ group, data = cbp_anova)
+
+summary(res_aov)
+```
+
+### c) Based on your response in part b), perform pairwise comparisons with an appropriate adjustment (e.g., Bonferroni, Tukey, and Dunnett – ‘below average’ as reference). Report your findings.
+```{r}
+pairwise.t.test(cbp_anova$score, cbp_anova$group, p.adjust.method="bonferroni")
+
+```
+
+
+## Problem 3
+### a) Justify the appropriate test to be used for addressing the question of interest.
+&nbsp;
+&nbsp;
+
+### b) Provide the table with all values necessary for calculating the test statistic.
+&nbsp;
+&nbsp;
+
+### c) State the hypotheses, test statistic, critical value, p value and decision rule interpreted in the context of the problem.
+
+
+
+
